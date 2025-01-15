@@ -7,9 +7,7 @@ struct Color3
 	uint8_t R;
 	uint8_t G;
 	uint8_t B;
-
 };
-
 
 void RecurseFillerInternal(Image* InImage, int InX, int InY, Color3 InColor, Color3 InSample)
 {
@@ -19,7 +17,6 @@ void RecurseFillerInternal(Image* InImage, int InX, int InY, Color3 InColor, Col
 		return;
 
 	int Position = (InY * InImage->Width + InX) * 3;
-
 
 	uint8_t Red = InImage->Data[Position + 0];
 	uint8_t Green = InImage->Data[Position + 1];
@@ -38,12 +35,10 @@ void RecurseFillerInternal(Image* InImage, int InX, int InY, Color3 InColor, Col
 	InImage->Data[Position + 1] = InColor.G;
 	InImage->Data[Position + 2] = InColor.B;
 
-
 	RecurseFillerInternal(InImage, InX + 1, InY, InColor, InSample);
 	RecurseFillerInternal(InImage, InX - 1, InY, InColor, InSample);
 	RecurseFillerInternal(InImage, InX, InY + 1, InColor, InSample);
 	RecurseFillerInternal(InImage, InX, InY - 1, InColor, InSample);
-
 }
 
 void RecursiveFiller(Image* InImage, int InX, int InY, Color3 InColor)
@@ -57,12 +52,7 @@ void RecursiveFiller(Image* InImage, int InX, int InY, Color3 InColor)
 	Color3 Sample{ Red,Green,Blue };
 
 	RecurseFillerInternal(InImage, InX, InY, InColor, Sample);
-
 }
-
-
-
-
 
 int main()
 {
