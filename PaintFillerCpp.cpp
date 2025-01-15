@@ -2,19 +2,84 @@
 #include <iostream>
 #include "Image.h"
 
+struct Color3
+{
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+
+};
+
+
+void RecurseFillerInternal(Image* InImage, int InX, int InY, Color3 InColor, Color3 InSample)
+{
+	if (InImage->Height < InY || InY < 0)
+		return;
+	if (InImage->Width < InX || InX < 0)
+		return;
+
+	int Position = (InY * InImage->Width + InX) * 3;
+
+
+	uint8_t Red = InImage->Data[Position + 0];
+	uint8_t Green = InImage->Data[Position + 1];
+	uint8_t Blue = InImage->Data[Position + 2];
+
+	Color3 CurrentColor{ Red,Green,Blue };
+
+	bool SameColor = CurrentColor.R == InSample.R && CurrentColor.G == InSample.G && CurrentColor.B == InSample.B;
+
+	if (!SameColor)
+	{
+		return;
+	}
+
+	InImage->Data[Position + 0] = InColor.R;
+	InImage->Data[Position + 1] = InColor.G;
+	InImage->Data[Position + 2] = InColor.B;
+
+
+	RecurseFillerInternal(InImage, InX + 1, InY, InColor, InSample);
+	RecurseFillerInternal(InImage, InX - 1, InY, InColor, InSample);
+	RecurseFillerInternal(InImage, InX, InY + 1, InColor, InSample);
+	RecurseFillerInternal(InImage, InX, InY - 1, InColor, InSample);
+
+}
+
+void RecursiveFiller(Image* InImage, int InX, int InY, Color3 InColor)
+{
+	int Position = (InY * InImage->Width + InX) * 3;
+
+	uint8_t Red = InImage->Data[Position + 0];
+	uint8_t Green = InImage->Data[Position + 1];
+	uint8_t Blue = InImage->Data[Position + 2];
+
+	Color3 Sample{ Red,Green,Blue };
+
+	RecurseFillerInternal(InImage, InX, InY, InColor, Sample);
+
+}
+
+
+
+
+
 int main()
 {
 	path Cwd = current_path();
-	
+
 	path FilePath = Cwd;
-	FilePath.concat("\\resources\\white_32x32_24bit.png");
+	FilePath.concat("\\resources\\white_48x48_24bit.png");
 
 	Image* MyImage = ImageIO::ReadImage(FilePath);
-	if (MyImage->Data == nullptr) {
+	if (MyImage->Data == nullptr)
+	{
 		std::cout << "Error reading image!\n";
 	}
 
-	//algoritmo change Image ...
+	Color3 Red{ 255,0,0 };
+
+	RecursiveFiller(MyImage,0,0,Red);
 
 	path DestFilePath = Cwd;
 	DestFilePath.concat("\\x64\\copy.png");
@@ -22,39 +87,5 @@ int main()
 
 	delete MyImage;
 
-/*
-	const char* fileName = "C:\\_fdf\\PaintFillerCpp\\resources\\tree.png";
-	int width, height, channels;
 
-	//RGB
-	//Red = (255, 0, 0)
-	// 2x2 pixel = [ 255, 0, 0,   255, 0, 0,    0, 0, 255,   0, 0, 255]
-	uint8_t* bytes = stbi_load(fileName, &width, &height, &channels, 0);
-	
-	if (bytes == nullptr) {
-		std::cout << "Error reading image!\n";
-	}
-	std::cout << "W: " << width << "\n";
-	std::cout << "H: " << height << "\n";
-
-
-	uint8_t pixel_0_R = bytes[0];
-	uint8_t pixel_0_G = bytes[1];
-	uint8_t pixel_0_B = bytes[2];
-
-	printf("%d\n", pixel_0_R);
-
-	std::cout << "R: " << (unsigned int)pixel_0_R  <<"\n";
-	std::cout << "G: " << (unsigned int)pixel_0_G << "\n";
-	std::cout << "B: " << (unsigned int)pixel_0_B << "\n";
-
-
-	//Make first pixel RED
-	bytes[0] = 255;
-	bytes[1] = 0;
-	bytes[2] = 0;
-
-	const char* fileNameWrite = "C:\\_fdf\\PaintFillerCpp\\resources\\tree2.png";
-	stbi_write_png(fileNameWrite, width, height, channels, bytes, 0);
-*/
 }
