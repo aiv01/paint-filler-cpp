@@ -4,9 +4,20 @@
 
 struct Color3
 {
-	uint8_t R;
-	uint8_t G;
-	uint8_t B;
+	uint8_t R;  // 0
+	uint8_t G;  // 1
+	uint8_t B;  // 2
+
+	bool operator==(const Color3& InOther) {
+		if (R != InOther.R) return false;
+		if (G != InOther.G) return false;
+		if (B != InOther.B) return false;
+		return true;
+	}
+
+	bool operator!=(const Color3& InOther) {
+		return !(*this == InOther);
+	}
 };
 
 void RecurseFillerInternal(Image* InImage, int InX, int InY, Color3 InColor, Color3 InSample)
@@ -18,22 +29,32 @@ void RecurseFillerInternal(Image* InImage, int InX, int InY, Color3 InColor, Col
 
 	int Position = (InY * InImage->Width + InX) * 3;
 
-	uint8_t Red = InImage->Data[Position + 0];
-	uint8_t Green = InImage->Data[Position + 1];
-	uint8_t Blue = InImage->Data[Position + 2];
+	uint8_t* PointerToCurrentPixel = &InImage->Data[Position];
+	Color3* PointerToCurrentColor = (Color3*)PointerToCurrentPixel;
 
-	Color3 CurrentColor{ Red,Green,Blue };
+	/*
+	Color3 CurrentColor;
+	CurrentColor.R = InImage->Data[Position + 0];
+	CurrentColor.G = InImage->Data[Position + 1];
+	CurrentColor.B = InImage->Data[Position + 2];
+	*/
 
-	bool SameColor = CurrentColor.R == InSample.R && CurrentColor.G == InSample.G && CurrentColor.B == InSample.B;
 
-	if (!SameColor)
+	//if (CurrentColor != InSample)
+	if (*PointerToCurrentColor != InSample)
 	{
 		return;
 	}
 
+	/*
 	InImage->Data[Position + 0] = InColor.R;
 	InImage->Data[Position + 1] = InColor.G;
 	InImage->Data[Position + 2] = InColor.B;
+	*/
+
+	PointerToCurrentColor->R = InColor.R;
+	PointerToCurrentColor->G = InColor.G;
+	PointerToCurrentColor->B = InColor.B;
 
 	RecurseFillerInternal(InImage, InX + 1, InY, InColor, InSample);
 	RecurseFillerInternal(InImage, InX - 1, InY, InColor, InSample);
@@ -45,11 +66,10 @@ void RecursiveFiller(Image* InImage, int InX, int InY, Color3 InColor)
 {
 	int Position = (InY * InImage->Width + InX) * 3;
 
-	uint8_t Red = InImage->Data[Position + 0];
-	uint8_t Green = InImage->Data[Position + 1];
-	uint8_t Blue = InImage->Data[Position + 2];
-
-	Color3 Sample{ Red,Green,Blue };
+	Color3 Sample;
+	Sample.R = InImage->Data[Position + 0];
+	Sample.G = InImage->Data[Position + 1];
+	Sample.B = InImage->Data[Position + 2];
 
 	RecurseFillerInternal(InImage, InX, InY, InColor, Sample);
 }
@@ -59,7 +79,7 @@ int main()
 	path Cwd = current_path();
 
 	path FilePath = Cwd;
-	FilePath.concat("\\resources\\white_48x48_24bit.png");
+	FilePath.concat("\\resources\\white_32x32_24bit.png");
 
 	Image* MyImage = ImageIO::ReadImage(FilePath);
 	if (MyImage->Data == nullptr)
