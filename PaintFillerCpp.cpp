@@ -7,7 +7,7 @@ int main()
 	path Cwd = current_path();
 	
 	path FilePath = Cwd;
-	FilePath.concat("\\resources\\tree.png");
+	FilePath.concat("\\resources\\white_32x32_24bit.png");
 
 	Image* MyImage = ImageIO::ReadImage(FilePath);
 	if (MyImage->Data == nullptr) {
@@ -17,7 +17,7 @@ int main()
 	//algoritmo change Image ...
 
 	path DestFilePath = Cwd;
-	DestFilePath.concat("\\resources\\tree3.png");
+	DestFilePath.concat("\\x64\\copy.png");
 	ImageIO::WriteImage(DestFilePath, MyImage);
 
 	delete MyImage;
